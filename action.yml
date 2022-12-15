@@ -1,0 +1,39 @@
+name: "3DM Mod Upload Large File"
+description: "Upload mod files larger than 10MB to your mods on 3DM Mods."
+branding:
+  icon: "upload-cloud"
+  color: "black"
+inputs:
+  username:
+    description: "Username"
+    required: false
+
+  password:
+    description: "Password"
+    required: false
+
+  cookies:
+    description: "Cookies"
+    required: false
+
+  id:
+    description: "ModID"
+    required: true
+
+  file:
+    description: "Path to the file to upload."
+    required: true
+
+  timeout:
+    description: “Timeout when something doesn't work.”
+    required: false
+    default: 5000
+
+  test:
+    description: "Test run without submitting."
+    required: false
+    default: false
+
+runs:
+  using: "node16"
+  main: "src/index.js"

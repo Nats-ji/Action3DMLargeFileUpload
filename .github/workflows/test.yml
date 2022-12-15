@@ -1,0 +1,57 @@
+name: Test
+on:
+  push:
+    paths-ignore:
+      - "README.md"
+    branches-ignore:
+      - "v*"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Get latest tag
+        run: echo "tag=`git describe --tags`" >> $GITHUB_ENV
+        shell: bash
+
+      - name: Install dependencies
+        run: |
+          npm install
+
+      - name: Update mod info
+        uses: GlossMod/ActionUpdateMod@v1
+        id: update_info
+        with:
+          APPID: 1234
+          APPKEY: 1234
+          id: ${{ secrets.ID_3DM }}
+          title: My Mod
+          tags: mod, trainer, interface
+          version: ${{ env.tag }}
+          desc: my test mod
+          content: README.md
+          file: README.md
+          zip-only: true
+          test: true
+      - name: Print the response from update_info
+        run: "echo 'Code: ${{ steps.update_info.outputs.code }}\tMessage: ${{ steps.update_info.outputs.msg }}\nFile: ${{ steps.update_info.outputs.file }}'"
+
+      - name: Upload mod file with password
+        uses: ./
+        with:
+          username: ${{ secrets.USERNAME_3DM }}
+          password: ${{ secrets.PASSWORD_3DM }}
+          id: ${{ secrets.ID_3DM }}
+          file: ${{ steps.update_info.outputs.file }}
+          test: true
+
+      - name: Upload mod file with cookies
+        uses: ./
+        with:
+          cookies: ${{ secrets.COOKIES_3DM }}
+          id: ${{ secrets.ID_3DM }}
+          file: ${{ steps.update_info.outputs.file }}
+          test: true
