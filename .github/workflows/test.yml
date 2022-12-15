@@ -5,6 +5,7 @@ on:
       - "README.md"
     branches-ignore:
       - "v*"
+  workflow_dispatch:
 
 jobs:
   test:
