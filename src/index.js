@@ -162,7 +162,7 @@ async function main() {
 
     if (!options.localDev) await browser.close();
   } catch (error) {
-    if (!options.localDev) core.setFailed(error.message);
+    core.setFailed(error.message);
   }
 }
 
