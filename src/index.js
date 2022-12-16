@@ -26,10 +26,10 @@ async function main() {
     console.log("Mod file path: " + options.file);
 
     if (!options.localDev) {
-      fs.mkdirSync(executePath, { recursive: true });
+      fs.mkdirSync(actionSettings.executePath, { recursive: true });
       console.log("Downloading chromium.");
-      var browserFetcher = new BrowserFetcher({ path: executePath });
-      var revisionInfo = await browserFetcher.download(chromiumRevision);
+      var browserFetcher = new BrowserFetcher({ path: actionSettings.executePath });
+      var revisionInfo = await browserFetcher.download(actionSettings.chromiumRevision);
       puppeteerLaunchOptions.executablePath = revisionInfo.executablePath;
       console.log("Download finished.");
     }
