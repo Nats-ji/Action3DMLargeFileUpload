@@ -14,7 +14,7 @@ async function main() {
     console.log("Mod id: " + options.id);
     console.log("Mod file path: " + options.file);
 
-    const browser = await Puppeteer.launch({
+    var browser = await Puppeteer.launch({
       headless: !options.localDev,
       args: ["--lang=zh"],
     });
@@ -163,6 +163,7 @@ async function main() {
     if (!options.localDev) await browser.close();
   } catch (error) {
     core.setFailed(error.message);
+    await browser.close();
   }
 }
 

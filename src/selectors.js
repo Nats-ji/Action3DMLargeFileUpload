@@ -17,7 +17,8 @@ async function getElementByInnerText(aPage, aSelector, aText, aContain) {
   for (const element of elements) {
     const text = await (await element.getProperty("innerText")).jsonValue();
     if (aContain && text.indexOf(aText) > -1) return element;
-    if (!aContain && text.toUpperCase() === aText.toUpperCase()) return element;
+    if (!aContain && text === aText) return element;
+    console.log(text)
   }
 }
 
