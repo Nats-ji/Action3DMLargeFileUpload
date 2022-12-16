@@ -47,6 +47,7 @@ jobs:
           password: ${{ secrets.PASSWORD_3DM }}
           id: ${{ secrets.ID_3DM }}
           file: ${{ steps.update_info.outputs.file }}
+          filename: my_mod_${{ env.tag }}
           test: true
 
       - name: Upload mod file with cookies

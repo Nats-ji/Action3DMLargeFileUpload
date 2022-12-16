@@ -113,6 +113,7 @@ async function main() {
       page,
       "资源名称 (玩家下载压缩包时的文件名)"
     );
+    const fileNameOrignal = await page.evaluate((x) => x.value, fileNameInput);
     const fileUploadInput = await Selectors.getFileInputByFileType(
       page,
       ".zip,.rar,.7z"
@@ -141,14 +142,20 @@ async function main() {
     {
       const lastTimeChecked = Date.now();
       while (true) {
-        const inputValue = await page.evaluate((x) => x.value, fileNameInput);
-        if (inputValue) break;
+        const fileName = await page.evaluate((x) => x.value, fileNameInput);
+        if (fileName !== fileNameOrignal) break;
         if (Date.now() - lastTimeChecked > options.timeout)
           throw new Error(
             "Maximum timeout reached when waiting for the upload to finish."
           );
       }
       console.log("Upload complete.");
+    }
+
+    // change fileNameInput if filename is set
+    if (options.filename) {
+      await page.evaluate((element, options) => {element.value = options.filename}, fileNameInput, options);
+      console.log("Changed file name to: " + options.filename);
     }
 
     // Click the save button to save the changes.

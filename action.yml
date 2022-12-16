@@ -24,6 +24,10 @@ inputs:
     description: "Path to the file to upload."
     required: true
 
+  filename:
+    description: "File name in the upload form."
+    required: false
+
   timeout:
     description: “Timeout when something doesn't work.”
     required: false

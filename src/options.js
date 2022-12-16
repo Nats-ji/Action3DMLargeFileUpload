@@ -21,6 +21,7 @@ class Options {
       this.cookies = process.env.cookies;
       this.id = process.env.mod_id;
       this.file = process.env.mod_file;
+      this.filename = process.env.mod_filename;
       this.timeout = Number(process.env.timeout);
       this.test = process.env.test === "true";
     }
@@ -31,6 +32,7 @@ class Options {
       this.cookies = core.getInput("cookies");
       this.id = core.getInput("id", { required: true });
       this.file = core.getInput("file", { required: true });
+      this.filename = core.getInput("filename");
       this.timeout = Number(core.getInput("timeout"));
       this.test = core.getBooleanInput("test");
     }

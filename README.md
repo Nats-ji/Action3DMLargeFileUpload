@@ -30,6 +30,7 @@ jobs:
           desc: 我的Mod简介
           content: README.md
           file: build/windows/myMod.asi
+          filename: myMod_${{ github.event.release.tag_name }}
           zip-only: true # 设置zip-only帮我们打包
 
         - name: 上传Mod文件
@@ -50,6 +51,7 @@ jobs:
 | cookies          | Mod 站 Cookie (可用 [EditThisCookie](https://www.editthiscookie.com/) 获取) | ${{ secrets.Cookies }}   |
 | id               | 你想要更新的 Mod 的 ID                                                      | 12345                    |
 | file             | 要上传的 Mod 文件路径（只能上传 zip/rar/7z）                                | `./path/to/mod/file.zip` |
+| filename（可选） | 资源名称 (玩家下载压缩包时的文件名)                                         | 我的 mod                 |
 | timeout （可选） | 超时时长（默认 5000），单位毫秒                                             | 5000                     |
 | test （可选）    | 测试，不保存                                                                | false                    |
 
