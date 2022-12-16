@@ -1,5 +1,7 @@
 const core = require("@actions/core");
 const Puppeteer = require("puppeteer");
+const { BrowserFetcher } = require("puppeteer");
+const fs = require("fs");
 const Options = require("./options");
 const Selectors = require("./selectors");
 
@@ -7,6 +9,15 @@ const LoginURL = "https://mod.3dmgame.com/login?redirect=/";
 const ModEditBaseURL = "https://mod.3dmgame.com/Workshop/PublishMod/";
 
 const options = new Options();
+const actionSettings = {
+  chromiumRevision: "1069273",
+  executePath: "./.action_3dm_large_file/chromium/",
+};
+
+const puppeteerLaunchOptions = {
+  headless: !options.localDev,
+  args: ["--lang=zh"],
+};
 
 async function main() {
   try {
@@ -14,10 +25,16 @@ async function main() {
     console.log("Mod id: " + options.id);
     console.log("Mod file path: " + options.file);
 
-    var browser = await Puppeteer.launch({
-      headless: !options.localDev,
-      args: ["--lang=zh"],
-    });
+    if (!options.localDev) {
+      fs.mkdirSync(executePath, { recursive: true });
+      console.log("Downloading chromium.");
+      var browserFetcher = new BrowserFetcher({ path: executePath });
+      var revisionInfo = await browserFetcher.download(chromiumRevision);
+      puppeteerLaunchOptions.executablePath = revisionInfo.executablePath;
+      console.log("Download finished.");
+    }
+
+    var browser = await Puppeteer.launch(puppeteerLaunchOptions);
     let page = await browser.newPage();
 
     // Use cookie
@@ -154,7 +171,13 @@ async function main() {
 
     // change fileNameInput if filename is set
     if (options.filename) {
-      await page.evaluate((element, options) => {element.value = options.filename}, fileNameInput, options);
+      await page.evaluate(
+        (element, options) => {
+          element.value = options.filename;
+        },
+        fileNameInput,
+        options
+      );
       console.log("Changed file name to: " + options.filename);
     }
 

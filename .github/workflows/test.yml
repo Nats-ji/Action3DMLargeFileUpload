@@ -18,10 +18,6 @@ jobs:
         run: echo "tag=`git describe --tags`" >> $GITHUB_ENV
         shell: bash
 
-      - name: Install dependencies
-        run: |
-          npm install
-
       - name: Update mod info
         uses: GlossMod/ActionUpdateMod@v1
         id: update_info
