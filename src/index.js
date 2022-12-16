@@ -51,7 +51,7 @@ async function main() {
         {
           name: "language",
           value: "zh-cn",
-          domain: "mod.3dmgame.com"
+          domain: "mod.3dmgame.com",
         },
       ]
     );
@@ -161,15 +161,18 @@ async function main() {
     );
     if (saveBtn === undefined) throw new Error("Can't find save button.");
 
-    if (!options.test) await saveBtn.click();
+    if (!options.test) {
+      await saveBtn.click();
 
-    // Need to check if saved
-    await Selectors.checkNavBarUserData(
-      page,
-      options.timeout,
-      true,
-      "Maximum timeout reached while saving."
-    );
+      // Need to check if saved
+      await Selectors.checkNavBarUserData(
+        page,
+        options.timeout,
+        true,
+        "Maximum timeout reached while saving."
+      );
+    }
+
     console.log("Mod saved.");
 
     if (!options.localDev) await browser.close();
