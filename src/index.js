@@ -30,7 +30,14 @@ async function main() {
       await page.setCookie(...JSON.parse(options.cookies));
       await page.goto("https://mod.3dmgame.com");
       // check login
-      if (await Selectors.checkNavBarUserData(page, options.timeout, !bothLoginExist, "Login Failed. Maximum timeout reached."))
+      if (
+        await Selectors.checkNavBarUserData(
+          page,
+          options.timeout,
+          !bothLoginExist,
+          "Login Failed. Maximum timeout reached."
+        )
+      )
         console.log("Login Successful.");
       else {
         console.log("Login with cookies failed. Use password instead.");
@@ -67,7 +74,12 @@ async function main() {
       await loginBtn.click();
 
       // check login
-      await Selectors.checkNavBarUserData(page, options.timeout, true, "Login Failed. Maximum timeout reached.");
+      await Selectors.checkNavBarUserData(
+        page,
+        options.timeout,
+        true,
+        "Login Failed. Maximum timeout reached."
+      );
       console.log("Login Successful.");
     }
 
@@ -135,12 +147,18 @@ async function main() {
       "button > span",
       "更新 MOD"
     );
+    if (saveBtn === undefined) throw new Error("Can't find save button.");
 
     if (!options.test) await saveBtn.click();
 
     // Need to check if saved
-    await Selectors.checkNavBarUserData(page, options.timeout, true, "Maximum timeout reached while saving.");
-    console.log('Mod saved.')
+    await Selectors.checkNavBarUserData(
+      page,
+      options.timeout,
+      true,
+      "Maximum timeout reached while saving."
+    );
+    console.log("Mod saved.");
 
     if (!options.localDev) await browser.close();
   } catch (error) {
