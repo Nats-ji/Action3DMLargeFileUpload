@@ -45,6 +45,18 @@ async function main() {
       }
     }
 
+    // set language with cookie
+    await page.setCookie(
+      ...[
+        {
+          name: "language",
+          value: "zh-cn",
+          domain: "mod.3dmgame.com"
+        },
+      ]
+    );
+    console.log("Set language to zh-cn.");
+
     // login with password
     if (usePasswd) {
       await page.goto(LoginURL);
