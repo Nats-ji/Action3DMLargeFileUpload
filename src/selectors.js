@@ -49,12 +49,12 @@ async function getUploadProgress(aPage) {
   );
 }
 
-async function checkLogin(aPage, aTimeout, aThrow) {
+async function checkNavBarUserData(aPage, aTimeout, aThrow, aErrorMessage) {
   try {
     await aPage.waitForSelector(".user-data", aTimeout);
     return true;
   } catch (e) {
-    if (aThrow) throw new Error("Login Failed. Maximum timeout reached.");
+    if (aThrow) throw new Error(aErrorMessage);
     return false;
   }
 }
@@ -65,5 +65,5 @@ module.exports = {
   getFileInputByFileType,
   waitForElement,
   getUploadProgress,
-  checkLogin,
+  checkNavBarUserData
 };
