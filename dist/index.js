@@ -51273,8 +51273,12 @@ async function main() {
     if (!options.localDev) {
       fs.mkdirSync(actionSettings.executePath, { recursive: true });
       console.log("Downloading chromium.");
-      const browserFetcher = new BrowserFetcher({ path: actionSettings.executePath });
-      const revisionInfo = await browserFetcher.download(actionSettings.chromiumRevision);
+      const browserFetcher = new BrowserFetcher({
+        path: actionSettings.executePath,
+      });
+      const revisionInfo = await browserFetcher.download(
+        actionSettings.chromiumRevision
+      );
       puppeteerLaunchOptions.executablePath = revisionInfo.executablePath;
       console.log("Download finished.");
     }
@@ -51369,19 +51373,23 @@ async function main() {
     );
     console.log("Mod page loaded.");
 
-    console.log("Uploading mod file.");
+    console.log("Preparing to upload mod file.");
 
-    const fileNameInput = await Selectors.getInputElementByLabel(
-      page,
-      "资源名称 (玩家下载压缩包时的文件名)"
-    );
-    const fileNameOrignal = await page.evaluate((x) => x.value, fileNameInput);
     const fileUploadInput = await Selectors.getFileInputByFileType(
       page,
       ".zip,.rar,.7z"
     );
 
     await fileUploadInput.uploadFile(options.file);
+
+    await Selectors.waitForElement(
+      page,
+      "div.mod-file div.upload-file div.list-progress",
+      options.timeout,
+      "Maximum timeout reached while wait for file to start uploading."
+    );
+
+    console.log("Upload started.");
 
     // Print upload progress
     let uploadProgress = 0;
@@ -51391,17 +51399,26 @@ async function main() {
       uploadProgress = await Selectors.getUploadProgress(page);
       if (progressLastFrame != uploadProgress) {
         lastTimeProgressChanged = Date.now();
-        console.log(`Upload progress: ${uploadProgress}%`);
+        console.log(`Upload progress: ${Math.round(uploadProgress)}%`);
       }
       if (Date.now() - lastTimeProgressChanged > options.timeout) {
         throw new Error(
-          "Maximum timeout reached when waiting for the upload to finish."
+          "Maximum timeout reached when waiting for the upload progress to move."
         );
       }
     }
 
     // Check if upload is finished using the file name field. the field will be auto filled when upload finished.
     {
+      const fileNameInput = await Selectors.getInputElementByLabel(
+        page,
+        "资源名称 (玩家下载压缩包时的文件名)"
+      );
+      const fileNameOrignal = await page.evaluate(
+        (x) => x.value,
+        fileNameInput
+      );
+
       const lastTimeChecked = Date.now();
       while (true) {
         const fileName = await page.evaluate((x) => x.value, fileNameInput);
@@ -51412,20 +51429,19 @@ async function main() {
           );
       }
       console.log("Upload complete.");
-    }
 
-    // change fileNameInput if filename is set
-    if (options.filename) {
-      await page.evaluate(
-        (element, options) => {
-          element.value = options.filename;
-        },
-        fileNameInput,
-        options
-      );
-      console.log("Changed file name to: " + options.filename);
+      // change fileNameInput if filename is set
+      if (options.filename) {
+        await page.evaluate(
+          (element, options) => {
+            element.value = options.filename;
+          },
+          fileNameInput,
+          options
+        );
+        console.log("Changed file name to: " + options.filename);
+      }
     }
-
     // Click the save button to save the changes.
     console.log("Saving changes.");
 
