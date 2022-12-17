@@ -130,6 +130,19 @@ async function main() {
 
     console.log("Preparing to upload mod file.");
 
+    // clear old file name
+    const fileNameInput = await Selectors.getInputElementByLabel(
+      page,
+      "资源名称 (玩家下载压缩包时的文件名)"
+    );
+
+    await fileNameInput.click();
+    await page.keyboard.down("Control");
+    await page.keyboard.press("A");
+    await page.keyboard.up("Control");
+    await page.keyboard.press("Backspace");
+    console.log("Cleared old file name.");
+
     const fileUploadInput = await Selectors.getFileInputByFileType(
       page,
       ".zip,.rar,.7z"
@@ -156,7 +169,7 @@ async function main() {
         lastTimeProgressChanged = Date.now();
         console.log(`Upload progress: ${Math.round(uploadProgress)}%`);
       }
-      if (Date.now() - lastTimeProgressChanged > options.timeout) {
+      if (Date.now() - lastTimeProgressChanged > options.timeout * 3) {
         throw new Error(
           "Maximum timeout reached when waiting for the upload progress to move."
         );
@@ -165,19 +178,10 @@ async function main() {
 
     // Check if upload is finished using the file name field. the field will be auto filled when upload finished.
     {
-      const fileNameInput = await Selectors.getInputElementByLabel(
-        page,
-        "资源名称 (玩家下载压缩包时的文件名)"
-      );
-      const fileNameOrignal = await page.evaluate(
-        (x) => x.value,
-        fileNameInput
-      );
-
       const lastTimeChecked = Date.now();
       while (true) {
         const fileName = await page.evaluate((x) => x.value, fileNameInput);
-        if (fileName !== fileNameOrignal) break;
+        if (fileName !== "") break;
         if (Date.now() - lastTimeChecked > options.timeout)
           throw new Error(
             "Maximum timeout reached when waiting for the upload to finish."
@@ -187,13 +191,12 @@ async function main() {
 
       // change fileNameInput if filename is set
       if (options.filename) {
-        await page.evaluate(
-          (element, options) => {
-            element.value = options.filename;
-          },
-          fileNameInput,
-          options
-        );
+        await fileNameInput.click();
+        await page.keyboard.down("Control");
+        await page.keyboard.press("A");
+        await page.keyboard.up("Control");
+        await page.keyboard.press("Backspace");
+        await fileNameInput.type(options.filename);
         console.log("Changed file name to: " + options.filename);
       }
     }
@@ -224,7 +227,7 @@ async function main() {
     if (!options.localDev) await browser.close();
   } catch (error) {
     core.setFailed(error.message);
-    await browser.close();
+    if (!options.localDev) await browser.close();
   }
 }
 
