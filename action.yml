@@ -31,7 +31,7 @@ inputs:
   timeout:
     description: “Timeout when something doesn't work.”
     required: false
-    default: 5000
+    default: 10000
 
   test:
     description: "Test run without submitting."
