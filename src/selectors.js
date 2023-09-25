@@ -51,7 +51,7 @@ async function getUploadProgress(aPage) {
 
 async function checkNavBarUserData(aPage, aTimeout, aThrow, aErrorMessage) {
   try {
-    await aPage.waitForSelector(".user-data", aTimeout);
+    await aPage.waitForSelector("div.user-avatar", aTimeout);
     return true;
   } catch (e) {
     if (aThrow) throw new Error(aErrorMessage);
