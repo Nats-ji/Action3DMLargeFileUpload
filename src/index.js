@@ -145,7 +145,7 @@ async function main() {
 
     const fileUploadInput = await Selectors.getFileInputByFileType(
       page,
-      ".zip,.rar,.7z"
+      ".zip,.rar,.7z,.gmm"
     );
 
     await fileUploadInput.uploadFile(options.file);
